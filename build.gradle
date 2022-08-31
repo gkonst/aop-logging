@@ -1,20 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
 group 'com.github.gkonst'
-version '1.0'
+version '1.2'
 
-apply plugin: 'java'
-apply plugin: 'maven'
-
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.springframework:spring-context:4.3.7.RELEASE'
-    compileOnly 'org.springframework:spring-aop:4.3.7.RELEASE'
-    compileOnly 'org.aspectj:aspectjrt:1.8.10'
-    compileOnly 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.springframework:spring-context:5.3.22'
+    implementation 'org.springframework:spring-aop:5.3.22'
+    implementation 'org.aspectj:aspectjrt:1.9.9.1'
+    implementation 'org.slf4j:slf4j-api:2.0.0'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -22,6 +24,18 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('repo')
+        }
+    }
+}
 
 artifacts {
     archives sourcesJar

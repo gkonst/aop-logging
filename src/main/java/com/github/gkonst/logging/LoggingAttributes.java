@@ -7,14 +7,12 @@ class LoggingAttributes {
     private final Expression after;
     private final String logName;
     private final LogLevel logLevel;
-    private final Class<? extends Throwable>[] noLogFor;
 
-    LoggingAttributes(Expression before, Expression after, String logName, LogLevel logLevel, Class<? extends Throwable>[] noLogFor) {
+    LoggingAttributes(Expression before, Expression after, String logName, LogLevel logLevel) {
         this.before = before;
         this.after = after;
         this.logName = logName;
         this.logLevel = logLevel;
-        this.noLogFor = noLogFor;
     }
 
     public Expression getBefore() {
@@ -31,9 +29,5 @@ class LoggingAttributes {
 
     public LogLevel getLogLevel() {
         return logLevel;
-    }
-
-    public Class<? extends Throwable>[] getNoLogFor() {
-        return noLogFor;
     }
 }

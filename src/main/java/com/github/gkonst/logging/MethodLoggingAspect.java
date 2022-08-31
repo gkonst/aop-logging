@@ -9,11 +9,11 @@ import java.lang.reflect.Method;
 
 @Aspect
 public class MethodLoggingAspect extends MethodLoggingSupport {
-    @Around(value = "@annotation(Logging) && target(target)")
+    @Around(value = "@annotation(LogMethod) && target(target)")
     public Object aroundLogging(ProceedingJoinPoint joinPoint, Object target) throws Throwable {
-        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        Object[] arguments = joinPoint.getArgs();
-        ThrowingSupplier<Object> callback = joinPoint::proceed;
+        final Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        final Object[] arguments = joinPoint.getArgs();
+        final ThrowingSupplier<Object> callback = joinPoint::proceed;
 
         return processWithLogging(target, method, arguments, callback);
     }

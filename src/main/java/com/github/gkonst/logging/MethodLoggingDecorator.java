@@ -4,11 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
-import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.Temporal;
+
+import static org.springframework.util.StringUtils.hasText;
 
 class MethodLoggingDecorator {
     private final LoggingAttributes attributes;
@@ -21,46 +22,27 @@ class MethodLoggingDecorator {
         this.attributes = attributes;
         this.context = context;
         this.callback = callback;
-        logger = LoggerFactory.getLogger(attributes.getLogName());
+        this.logger = LoggerFactory.getLogger(attributes.getLogName());
     }
 
     public Object process() throws Throwable {
         log(attributes.getBefore());
-        Temporal start = Instant.now();
-        Object result = null;
-        Throwable err = null;
-        try {
-            result = callback.get();
-        } catch (Throwable throwable) {
-            err = throwable;
-            if (!isExcluded(throwable)) {
-                logger.error(throwable.getMessage(), throwable);
-            }
-        }
+
+        final Temporal start = Instant.now();
+        final Object result = callback.get();
+
         context.setVariable("duration", Duration.between(start, Instant.now()));
         context.setVariable("result", result);
-        context.setVariable("exception", err);
 
         log(attributes.getAfter());
-        if (err != null) {
-            throw err;
-        }
-        return result;
-    }
 
-    private boolean isExcluded(Throwable throwable) {
-        for (Class<? extends Throwable> excludedClass : attributes.getNoLogFor()) {
-            if (excludedClass.isInstance(throwable)) {
-                return true;
-            }
-        }
-        return false;
+        return result;
     }
 
     private void log(Expression expression) {
         if (expression != null) {
-            String message = expression.getValue(context, String.class);
-            if (!StringUtils.isEmpty(message)) {
+            final String message = expression.getValue(context, String.class);
+            if (hasText(message)) {
                 switch (attributes.getLogLevel()) {
                     case ERROR:
                         logger.error(message);

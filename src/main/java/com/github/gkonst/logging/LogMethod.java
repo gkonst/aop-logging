@@ -9,10 +9,11 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Logging {
+public @interface LogMethod {
 
     String BEFORE = "#{#method.getName()} (#{#arguments?:''}) is called...";
     String AFTER = "#{#method.getName()} is finished in #{#duration.toMillis()} ms";
+
     @AliasFor("logAfter")
     String value() default AFTER;
 
@@ -22,6 +23,4 @@ public @interface Logging {
     String logAfter() default AFTER;
 
     LogLevel logLevel() default LogLevel.DEBUG;
-
-    Class<? extends Throwable>[] noLogFor() default {};
 }

@@ -15,7 +15,7 @@ public class AutoProxyMethodLoggingConfiguration extends AbstractMethodLoggingCo
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public DefaultBeanFactoryPointcutAdvisor advisor() {
         DefaultBeanFactoryPointcutAdvisor advisor = new DefaultBeanFactoryPointcutAdvisor();
-        advisor.setPointcut(AnnotationMatchingPointcut.forMethodAnnotation(Logging.class));
+        advisor.setPointcut(AnnotationMatchingPointcut.forMethodAnnotation(LogMethod.class));
         advisor.setAdvice(advice());
         advisor.setOrder(this.enableLoggingFeature.<Integer>getNumber("order"));
         return advisor;
