@@ -16,6 +16,20 @@ class MethodLoggingDecorator {
     private final EvaluationContext context;
     private final ThrowingSupplier<Object> callback;
     private final Logger logger;
+    private static final boolean isReactive;
+
+    static {
+        isReactive = isReactive();
+    }
+
+    private static boolean isReactive() {
+        try {
+            Class.forName("org.reactivestreams.Publisher");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
 
     public MethodLoggingDecorator(LoggingAttributes attributes, EvaluationContext context, ThrowingSupplier<Object> callback) {
@@ -31,12 +45,19 @@ class MethodLoggingDecorator {
         final Temporal start = Instant.now();
         final Object result = callback.get();
 
+        if (isReactive) {
+            return ReactiveMethodLogging.tryToAddReactiveLogging(result, realResult -> logAfter(start, realResult));
+        } else {
+            logAfter(start, result);
+            return result;
+        }
+    }
+
+    private void logAfter(Temporal start, Object result) {
         context.setVariable("duration", Duration.between(start, Instant.now()));
         context.setVariable("result", result);
 
         log(attributes.getAfter());
-
-        return result;
     }
 
     private void log(Expression expression) {
