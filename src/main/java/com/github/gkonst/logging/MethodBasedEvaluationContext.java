@@ -79,9 +79,22 @@ public class MethodBasedEvaluationContext extends StandardEvaluationContext {
         }
 
         setVariable("arguments", builder.toString());
+        try {
+            registerFunction("mask", MethodBasedEvaluationContext.class.getDeclaredMethod("mask", Object.class, Boolean.class));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getValueWrapped(Object arg) {
         return '\"' + String.valueOf(arg) + '\"';
+    }
+
+    public static String mask(Object value, Boolean mask) {
+        if (mask) {
+            return "***";
+        } else {
+            return String.valueOf(value);
+        }
     }
 }
